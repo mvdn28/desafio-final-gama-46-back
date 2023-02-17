@@ -39,10 +39,10 @@ export class ProductController{
         const id = req.params.id
         const { name, description, price, image,category } = req.body
 
-        await Product.findOneAndReplace({_id:id},{ name, description, price, image,category })
+        const update = await Product.findOneAndReplace({_id:id},{ name, description, price, image,category })
 
         return await Product.findById(id)
-            .then((updatedProduct)=>updatedProduct ? res.status(200).json({updatedProduct}) : res.status(404).json({message:"Product not found"}))
+            .then((updatedProduct)=>update ? res.status(200).json({updatedProduct}) : res.status(404).json({message:"Product not found"}))
             .catch((error)=>res.status(500).json({error}))
     }
 
