@@ -1,5 +1,9 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export default  {
-    uri:'mongodb://127.0.0.1:27017/desafio-final',
-    port: "27017",
-    host: "127.0.0.1"
+    uri:process.env.DBURI as string,
+    port: process.env.DBPORT as string,
+    host: process.env.DBHOST as string
 }
