@@ -14,7 +14,7 @@ export class CategoryController{
     static findOne = async (req: Request, res: Response): Promise<void | Response> => {
         const id = req.params.id
 
-        return Category.findById(id)
+        return await Category.findById(id)
             .then((category)=>{category ? res.status(200).json(category) : res.status(404).json({message:"Category not found"})})
             .catch((error) => res.status(500).json({error}))
     }
@@ -26,7 +26,7 @@ export class CategoryController{
             name
         }as unknown as Document<ICategory>)
 
-        return newCategory.save()
+        return await newCategory.save()
             .then((category) => res.status(201).json({category}))
             .catch((error) => res.status(500).json({error}))
     }
@@ -34,16 +34,17 @@ export class CategoryController{
     static update = async (req: Request, res: Response): Promise<Response> => {
         const id = req.params.id
         const { name } = req.body
+        const update = await Category.findOneAndReplace({_id:id},{ name })
 
-        return Category.findOneAndReplace({_id:id},{ name })
-            .then((updatedCategory)=>updatedCategory ? res.status(200).json({updatedCategory}) : res.status(404).json({message:"Category not found"}))
+        return await Category.findById(id)
+            .then((updatedCategory)=>update ? res.status(200).json({updatedCategory}) : res.status(404).json({message:"Category not found"}))
             .catch((error)=>res.status(500).json({error}))
     }
 
     static findAndDelete = async (req: Request, res: Response): Promise<void | Response> => {
         const id = req.params.id
 
-        return Category.findByIdAndDelete(id)
+        return await Category.findByIdAndDelete(id)
             .then((category)=> category ? res.status(201).json({category,message:"deleted"}) : res.status(404).json({category,message:"Category not found"}))
             .catch((error)=> res.status(500).json({error}))
     }
