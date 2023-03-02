@@ -1,17 +1,16 @@
-import { Request, Response } from "express"
 import { Types, Document } from "mongoose"
 import { ICategory } from "../entities/Category"
 import Category from "../entities/Category"
 
 export class CategoryController{
 
-    static findAll =async (req:Request,res:Response) => {
+    static findAll =async (req:any,res:any) => {
         return await Category.find()
             .then((categories)=> res.status(200).json({categories}))
             .catch((error)=>res.status(500).json({error}))
     }
 
-    static findOne = async (req: Request, res: Response): Promise<void | Response> => {
+    static findOne = async (req: any, res: any): Promise<void | any> => {
         const id = req.params.id
 
         return await Category.findById(id)
@@ -19,7 +18,7 @@ export class CategoryController{
             .catch((error) => res.status(500).json({error,message:'Ocorreu um erro ao buscar os detalhes da categoria.'}))
     }
 
-    static create = async (req: Request, res: Response): Promise<Response> => {
+    static create = async (req: any, res: any): Promise<any> => {
         const { name } = req.body
         const newCategory = new Category({
             _id:new Types.ObjectId(),
@@ -31,7 +30,7 @@ export class CategoryController{
             .catch((error) => res.status(500).json({error,message:'Ocorreu um erro ao cadastrar a categoria.'}))
     }
 
-    static update = async (req: Request, res: Response): Promise<Response> => {
+    static update = async (req: any, res: any): Promise<any> => {
         const id = req.params.id
         const { name } = req.body
         const update = await Category.findOneAndReplace({_id:id},{ name })
@@ -41,7 +40,7 @@ export class CategoryController{
             .catch((error)=>res.status(500).json({error, message: 'Ocorreu um erro ao atualizar a categoria'}))
     }
 
-    static findAndDelete = async (req: Request, res: Response): Promise<void | Response> => {
+    static findAndDelete = async (req: any, res: any): Promise<void | any> => {
         const id = req.params.id
 
         return await Category.findByIdAndDelete(id)

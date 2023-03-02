@@ -2,7 +2,7 @@ import Product, { IProduct } from '../../src/entities/Product'
 import app from '../../src/app'
 import request from 'supertest'
 import { connection } from 'mongoose'
-import User from '../../src/entities/User'
+import {User} from '../../src/entities/User'
 import Category from '../../src/entities/Category'
 import server from '../../src'
 
@@ -14,7 +14,7 @@ describe('Product routes', ()=>{
             name:'testUser',
             email:'testEmail',
             password:'testPassword',
-            isAdmin:true
+            role:"admin"
         })
         await testUser.save()
         var testCategory = new Category({
@@ -73,7 +73,7 @@ describe('Product routes', ()=>{
                 name:'testUserNotAdmin',
                 email:'testEmailNotAdmin',
                 password:'testPasswordNotAdmin',
-                isAdmin:false
+                role:"client"
             })
             await testUserNotAdmin.save()
             const login = {email:'testEmailNotAdmin',password:'testPasswordNotAdmin'}

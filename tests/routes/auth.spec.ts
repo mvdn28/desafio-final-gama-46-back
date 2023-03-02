@@ -2,7 +2,7 @@ import Category from '../../src/entities/Category'
 import app from '../../src/app'
 import request from 'supertest'
 import mongoose, { connection } from 'mongoose'
-import User from '../../src/entities/User'
+import {User} from '../../src/entities/User'
 import server from '../../src'
 
 
@@ -13,7 +13,7 @@ describe('Auth routes', ()=>{
             name:'testUser',
             email:'testEmail',
             password:'testPassword',
-            isAdmin:true
+            role:"admin"
         })
         await testUser.save()
     })

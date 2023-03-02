@@ -1,12 +1,11 @@
 import mongoose, { Schema } from "mongoose";
-import { ICupom } from "./Cupom";
 import { IProduct } from "./Product";
 
 export interface IOrder{
     products:IProduct[],
     total:number,
     user: any,
-    cupom?: ICupom,
+    cupom?: any,
 }
 
 const orderSchema: Schema<IOrder> = new Schema(
