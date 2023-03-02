@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --collectCoverage --runInBand --forceExit",
+    "test": "cross-env NODE_ENV=test jest --watchAll --collectCoverage --runInBand --forceExit",
     "dev": "nodemon src/index.ts",
-    "start":"node ./dist/index.js",
-    "build":"tsc",
+    "start": "cross-env NODE_ENV=production node ./dist/index.js",
+    "build": "tsc",
     "postinstall": "npm run build"
   },
   "repository": {
@@ -39,6 +39,7 @@
     "@types/jest": "^29.4.0",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/supertest": "^2.0.12",
+    "cross-env": "^7.0.3",
     "jest": "^29.4.3",
     "nodemon": "^2.0.20",
     "supertest": "^6.3.3",
