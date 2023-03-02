@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { Types, Document, ObjectId } from "mongoose"
 import Order, { IOrder } from "../entities/Order"
 import Product, { IProduct } from "../entities/Product"
+import Coupon from "../entities/Coupon"
 
 export class OrderController {
     static findAll = async (req: Request, res: Response) => {
@@ -10,6 +11,7 @@ export class OrderController {
           .find()
           .populate('products')
           .populate('user')
+          .populate('cuponId')
         res.status(200).json({ orders });
       } catch (error) {
         res.status(500).json({
@@ -26,6 +28,7 @@ export class OrderController {
           .findById(id)
           .populate('products')
           .populate('user')
+          .populate('cuponId')
         order
           ? res.status(200).json({ order })
           : res.status(404).json({ message: "Pedido não encontrado." });
@@ -39,7 +42,16 @@ export class OrderController {
   
     static create = async (req: any, res: Response) => {
       try {
-        const { products } = req.body;
+        const { products , couponId } = req.body;
+
+        let coupon = null;
+        if (couponId) {
+          coupon = await Coupon.findById(couponId);
+          if (!coupon) {
+            return res.status(400).json({ message: 'Cupom inválido.' });
+          }
+        }
+
         const productObject = await Promise.all(
           products.map(async(product:ObjectId)=>{
             return await Product.findById(product)
@@ -50,6 +62,10 @@ export class OrderController {
         productObject.forEach((element: { price: number }) => {
           total += element.price;
         });
+
+        if (coupon) {
+          total = total - (total * coupon.discount) / 100;
+        }
         
         const newOrder = new Order({
           _id: new Types.ObjectId(),
@@ -73,7 +89,16 @@ export class OrderController {
     static update = async (req: any, res: Response) => {
       try {
         const id = req.params.id;
-        const { products } = req.body;
+        const { products , couponId } = req.body;
+
+        let coupon = null;
+        if (couponId) {
+          coupon = await Coupon.findById(couponId);
+          if (!coupon) {
+            return res.status(400).json({ message: 'Cupom inválido.' });
+          }
+        }
+
         const productObject = await Promise.all(
           products.map(async(product:ObjectId)=>{
             return await Product.findById(product)
@@ -84,6 +109,11 @@ export class OrderController {
         productObject.forEach((element: { price: number }) => {
           total += element.price;
         });
+
+        if (coupon) {
+          total = total - (total * coupon.discount) / 100;
+        }
+
         await Order.findOneAndReplace({ _id: id }, { products, total, user });
         const updatedOrder = await Order
           .findById(id)
