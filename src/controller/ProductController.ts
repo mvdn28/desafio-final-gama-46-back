@@ -5,52 +5,74 @@ import Product from "../entities/Product"
 
 export class ProductController{
 
-    static findAll =async (req:Request,res:Response) => {
-        return await Product.find()
-            .then((products)=> res.status(200).json({products}))
-            .catch((error)=>res.status(500).json({error,message:"Ocorreu um erro ao listar os produtos"}))
+    static findAll = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const products = await Product.find();
+            return res.status(200).json({ products });
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao listar os produtos" });
+        }
     }
 
-    static findOne = async (req: Request, res: Response): Promise<void | Response> => {
-        const id = req.params.id
-
-        return await Product.findById(id)
-            .then((product)=>{product ? res.status(200).json({product}) : res.status(404).json({message:"Produto não encontrado."})})
-            .catch((error) => res.status(500).json({error,message:"Ocorreu um erro ao listar o produto"}))
+    static findOne = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const id = req.params.id;
+            const product = await Product.findById(id);
+            if (product) {
+                return res.status(200).json({ product });
+            } else {
+                return res.status(404).json({ message: "Produto não encontrado." });
+            }
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao listar o produto" });
+        }
     }
 
     static create = async (req: Request, res: Response): Promise<Response> => {
-        const { name, description, price, image,category } = req.body
-        const newProduct =new Product({
-            _id: new Types.ObjectId(),
-            name,
-            description,
-            price,
-            image,
-            category
-        } as unknown as Document<IProduct>)
-
-        return await newProduct.save()
-            .then((product) => res.status(201).json({product}))
-            .catch((error) => res.status(500).json({error, message:"Ocorreu um erro ao cadastrar o produto"}))
+        try {
+            const { name, description, price, image, category } = req.body;
+            const newProduct = new Product({
+                _id: new Types.ObjectId(),
+                name,
+                description,
+                price,
+                image,
+                category
+            } as unknown as Document<IProduct>);
+            const product = await newProduct.save();
+            return res.status(201).json({ product });
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao cadastrar o produto" });
+        }
     }
 
     static update = async (req: Request, res: Response): Promise<Response> => {
-        const id = req.params.id
-        const { name, description, price, image,category } = req.body
-
-        const update = await Product.findOneAndReplace({_id:id},{ name, description, price, image,category })
-
-        return await Product.findById(id)
-            .then((updatedProduct)=>update ? res.status(200).json({updatedProduct}) : res.status(404).json({message:"Produto não encontrado"}))
-            .catch((error)=>res.status(500).json({error,message:"Ocorreu um erro ao atualizar o produto"}))
+        try {
+            const id = req.params.id;
+            const { name, description, price, image, category } = req.body;
+            const update = await Product.findOneAndReplace({ _id: id }, { name, description, price, image, category });
+            const updatedProduct = await Product.findById(id);
+            if (update) {
+                return res.status(200).json({ updatedProduct });
+            } else {
+                return res.status(404).json({ message: "Produto não encontrado" });
+            }
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao atualizar o produto" });
+        }
     }
 
-    static findAndDelete = async (req: Request, res: Response): Promise<void | Response> => {
-        const id = req.params.id
-
-        return await Product.findByIdAndDelete(id)
-            .then((product)=> product ? res.status(201).json({product,message:"Produto deletado com sucesso"}) : res.status(404).json({product,message:"Produto não encontrado"}))
-            .catch((error)=> res.status(500).json({error,message:"Ocorreu um erro ao deletar o produto"}))
+    static findAndDelete = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const id = req.params.id;
+            const product = await Product.findByIdAndDelete(id);
+            if (product) {
+                return res.status(201).json({ product, message: "Produto deletado com sucesso" });
+            } else {
+                return res.status(404).json({ product, message: "Produto não encontrado" });
+            }
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao deletar o produto" });
+        }
     }
 }
