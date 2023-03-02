@@ -5,6 +5,8 @@ import { connection } from 'mongoose'
 import {User} from '../../src/entities/User'
 import Category from '../../src/entities/Category'
 import server from '../../src'
+import { ObjectId} from "mongodb"
+
 
 
 describe('Product routes', ()=>{
@@ -52,6 +54,11 @@ describe('Product routes', ()=>{
             const res = await request(app).get(`/product/${product._id}`)
             expect(res.status).toBe(200);
             expect(res.body.product.name).toEqual(product.name)
+        })
+        it('should return 404', async()=>{
+            const objectid = new ObjectId()
+            const res = await request(app).get(`/product/${objectid}`)
+            expect(res.status).toBe(404)
         })
         it('should return 500', async()=>{
             const res = await request(app).get('/product/id_not_used')
@@ -104,6 +111,17 @@ describe('Product routes', ()=>{
             expect(res.status).toBe(200)
             expect(res.body.updatedProduct.name).toEqual(ProductUpdate.name)
         })
+        it('should return 404',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const testCategory = await Category.findOne({name:'testCategory'})
+            const product = new Product({ name:'ProdName', description:'ProdDesc', price:50, image:'ProdImage',category:testCategory!._id})
+            await product.save()
+            const ProductUpdate = {name:'ProdNameUpdate'}
+            const objectid = new ObjectId()
+            const res = await request(app).put(`/product/${objectid}`).send(ProductUpdate).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
+        })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
@@ -126,6 +144,16 @@ describe('Product routes', ()=>{
             expect(res.status).toBe(201)
             expect(res.body.product.name).toEqual('ProdName')
             expect(res.body.message).toEqual("Produto deletado com sucesso")
+        })
+        it('should return 404',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const testCategory = await Category.findOne({name:'testCategory'})
+            const product = new Product({ name:'ProdName', description:'ProdDesc', price:50, image:'ProdImage',category:testCategory!._id})
+            await product.save()
+            const objectid = new ObjectId()
+            const res = await request(app).delete(`/product/${objectid}`).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
         })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}

@@ -6,6 +6,7 @@ import Category from '../../src/entities/Category'
 import server from '../../src'
 import Product from '../../src/entities/Product'
 import { User } from '../../src/entities/User'
+import { ObjectId } from "mongodb"
 
 
 describe('Order routes', ()=>{
@@ -89,11 +90,18 @@ describe('Order routes', ()=>{
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
             const products = await Product.find()
-            const user = await User.findOne({name:'testUser'})
             const order = {products}
             const res = await request(app).post('/Order').send(order).set('authorization',resLogin.body.token)
             expect(res.status).toBe(201)
             expect(res.body.order.total).toEqual(150)
+        })
+        it('should return 500',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const productS = await Product.find()
+            const order = {productS}
+            const res = await request(app).post('/Order').send(order).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(500)
         })
     })
     describe('PUT /Order/:id',()=>{
@@ -108,6 +116,18 @@ describe('Order routes', ()=>{
             const res = await request(app).put(`/Order/${order._id}`).send(OrderUpdate).set('authorization',resLogin.body.token)
             expect(res.status).toBe(200)
             expect(res.body.updatedOrder.total).toEqual(150)
+        })
+        it('should return 404',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const products = await Product.find()
+            const user = await User.findOne({name:'testUser'})
+            const order = new Order({products , total:150, user:user!._id})
+            await order.save()
+            const OrderUpdate = {products:[products[1]]}
+            const objectid = new ObjectId()
+            const res = await request(app).put(`/Order/${objectid}`).send(OrderUpdate).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
         })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}
