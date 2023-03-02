@@ -132,7 +132,7 @@ describe('Order routes', ()=>{
             const res = await request(app).delete(`/order/${order._id}`).set('authorization',resLogin.body.token)
             expect(res.status).toBe(201)
             expect(res.body.order.total).toEqual(150)
-            expect(res.body.message).toEqual('deleted')
+            expect(res.body.message).toEqual("Pedido excluído com sucesso")
         })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}
