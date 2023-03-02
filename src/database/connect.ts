@@ -4,7 +4,7 @@ import config  from "./config";
 const connect = async() => {
     try {
         const dbUri = config.uri as string;
-        mongoose.set('strictQuery',true);
+        mongoose.set('strictQuery',false);
         await mongoose.connect(dbUri, { retryWrites: true, w: 'majority' });
         console.log("Database Connected");
     } catch (error) {
