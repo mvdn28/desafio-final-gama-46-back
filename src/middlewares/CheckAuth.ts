@@ -14,7 +14,6 @@ export const CheckAuth = (req:any,res: Response, next: NextFunction) => {
         req.userRole = decodedToken.role;
         next();
     } catch (error) {
-        console.error(error);
         res.status(401).json({ message: 'Token de autenticação inválido.' });
     }
 }

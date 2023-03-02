@@ -12,8 +12,7 @@ export class UserController{
             const users = await User.find({}, { password: 0 });
             res.status(200).json({ users });
           } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ocorreu um erro ao listar os usuários.' });
+            res.status(500).json({error, message: 'Ocorreu um erro ao listar os usuários.' });
           }
     }
     static findOne = async (req:Request,res:Response) => {
@@ -25,17 +24,11 @@ export class UserController{
         
             res.status(200).json({ user });
           } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ocorreu um erro ao buscar os detalhes do usuário.' });
+            res.status(500).json({error, message: 'Ocorreu um erro ao buscar os detalhes do usuário.' });
           }
     }
     static create = async(req:Request,res:Response) =>{
-        try {
-            const existingAdmin = await User.findOne({ role: 'admin' });
-            if (!existingAdmin) {
-              return res.status(400).json({ message: 'Não foi possível cadastrar o usuário, pois não existe nenhum administrador no sistema.' });
-            }
-        
+        try {        
             const { name, email, password, role } = req.body;
         
             const hashedPassword = await bcrypt.hash(password, 12);
@@ -51,8 +44,7 @@ export class UserController{
         
             res.status(201).json({ user, token });
           } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ocorreu um erro ao cadastrar o usuário.' });
+            res.status(500).json({error, message: 'Ocorreu um erro ao cadastrar o usuário.' });
           }
     }
     static update = async(req:Request, res:Response) =>{
@@ -75,8 +67,7 @@ export class UserController{
         
             res.status(201).json({ updatedUser });
           } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ocorreu um erro ao atualizar o usuário.' });
+            res.status(500).json({error, message: 'Ocorreu um erro ao atualizar o usuário.' });
           }
     }
     static findAndDelete = async (req:Request,res:Response) =>{
@@ -88,8 +79,7 @@ export class UserController{
         
             res.status(200).json({user:deletedUser, message: 'Usuário excluído com sucesso.' });
           } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: 'Ocorreu um erro ao excluir o usuário.' });
+            res.status(500).json({error, message: 'Ocorreu um erro ao excluir o usuário.' });
           }
     }
 }
