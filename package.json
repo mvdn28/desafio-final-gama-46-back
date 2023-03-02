@@ -8,8 +8,7 @@
     "dev": "nodemon src/index.ts",
     "start":"node /dist/index.js",
     "build":"tsc",
-    "migrations":"migrate-mongo up",
-    "postinstall": "npm run build && npm run migrations"
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
