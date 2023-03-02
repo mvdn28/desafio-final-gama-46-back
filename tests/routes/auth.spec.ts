@@ -22,9 +22,6 @@ describe('Auth routes', ()=>{
         await mongoose.connection.close()
         server.close()
     })
-    afterEach(async()=>{
-        await  Category.deleteMany({})
-    })
     describe('POST /auth/login', ()=>{
         it('should return an error that the password is incorrect', async()=>{
             const login = {email:'testEmail',password:'PasswordNotCorrect'}
