@@ -4,9 +4,9 @@ import config  from "./config";
 const connect = async() => {
     try {
         const dbUri = config.uri as string;
-        const dbName = config.environment === "test"
-            ? config.nameDbtest
-            : config.nameDb
+        const dbName = config.environment != "test"
+            ? config.nameDb
+            : config.nameDbtest
         mongoose.set('strictQuery',false);
         await mongoose.connect(dbUri, { 
             retryWrites: true, 

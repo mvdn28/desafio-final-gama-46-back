@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --collectCoverage --runInBand --forceExit",
+    "test": "cross-env NODE_ENV=test jest --watchAll --collectCoverage --runInBand --forceExit",
     "dev": "nodemon src/index.ts",
     "start": "node ./dist/index.js",
     "build": "tsc",
