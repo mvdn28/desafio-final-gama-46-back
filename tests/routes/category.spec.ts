@@ -2,9 +2,9 @@ import Category from '../../src/entities/Category'
 import app from '../../src/app'
 import request from 'supertest'
 import { connection} from 'mongoose'
-import User from '../../src/entities/User'
+import {User} from '../../src/entities/User'
 import server from '../../src'
-
+import { ObjectId} from "mongodb"
 
 describe('Category routes', ()=>{
     beforeAll(async()=>{
@@ -13,7 +13,7 @@ describe('Category routes', ()=>{
             name:'testUser',
             email:'testEmail',
             password:'testPassword',
-            isAdmin:true
+            role:"admin"
         })
         await testUser.save()
     })
@@ -62,7 +62,7 @@ describe('Category routes', ()=>{
                 name:'testUserNotAdmin',
                 email:'testEmailNotAdmin',
                 password:'testPasswordNotAdmin',
-                isAdmin:false
+                role:"client"
             })
             await testUserNotAdmin.save()
             const login = {email:'testEmailNotAdmin',password:'testPasswordNotAdmin'}
@@ -90,6 +90,16 @@ describe('Category routes', ()=>{
             expect(res.status).toBe(200)
             expect(res.body.updatedCategory.name).toEqual('firstUpdated')
         })
+        it('should return 404',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const category = new Category({name:'first'})
+            await category.save()
+            const categoryUpdate = {name:'firstUpdated'}
+            const objectId = new ObjectId();
+            const res = await request(app).put(`/category/${objectId}`).send(categoryUpdate).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
+        })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
@@ -110,6 +120,15 @@ describe('Category routes', ()=>{
             expect(res.status).toBe(201)
             expect(res.body.category.name).toEqual('first')
             expect(res.body.message).toEqual('Categoria excluída com sucesso.')
+        })
+        it('should return 404',async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const category = new Category({name:'first'})
+            await category.save()
+            const objectid = new ObjectId()
+            const res = await request(app).delete(`/category/${objectid}`).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
         })
         it('should return 500',async()=>{
             const login = {email:'testEmail',password:'testPassword'}

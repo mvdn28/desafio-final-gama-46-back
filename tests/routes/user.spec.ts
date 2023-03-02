@@ -1,8 +1,9 @@
-import User, { IUser } from '../../src/entities/User'
+import {User,IUser } from '../../src/entities/User'
 import app from '../../src/app'
 import request from 'supertest'
 import { connection } from 'mongoose'
 import server from '../../src'
+import { ObjectId} from "mongodb"
 
 
 describe('User routes', ()=>{
@@ -18,8 +19,8 @@ describe('User routes', ()=>{
     })
     describe('GET /User', ()=>{
         it('should return many categories', async()=>{
-            const user = {name:'testName', email:'testEmail', password:'testPassword',isAdmin:true}
-            const user2 = {name:'testName2', email:'testEmail2', password:'testPassword2',isAdmin:true}
+            const user = {name:'testName', email:'testEmail', password:'testPassword',role:"admin"}
+            const user2 = {name:'testName2', email:'testEmail2', password:'testPassword2',role:"admin"}
             const ExpectedData = [ user, user2]
             await User.insertMany(ExpectedData as IUser[]);
             const res =  await request(app).get('/User')
@@ -30,24 +31,29 @@ describe('User routes', ()=>{
     })
     describe('GET /User/:id',()=>{
         it('should return the User by id', async()=>{
-            const user = new User({name:'testName', email:'testEmail', password:'testPassword',isAdmin:true})
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
             await user.save()
             const res = await request(app).get(`/User/${user._id}`)
             expect(res.status).toBe(200);
-            expect(res.body.name).toEqual(user.name)
+            expect(res.body.user.name).toEqual(user.name)
+        })
+        it('should return 404', async()=>{
+            const objectid = new ObjectId()
+            const res = await request(app).get(`/User/${objectid}`)
+            expect(res.status).toBe(404)
         })
         it('should return 500', async()=>{
-            const res = await request(app).get('/User/id_not_used')
+            const res = await request(app).get(`/User/id_not_used`)
             expect(res.status).toBe(500)
         })
     })
     describe('POST /User', () => {
         it('should return the created object',async()=>{
-            const user = new User({name:'testName', email:'testEmail', password:'testPassword',isAdmin:true})
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
             await user.save()
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
-            const user2 = {name:'testName2', email:'testEmail2', password:'testPassword2',isAdmin:true}
+            const user2 = {name:'testName2', email:'testEmail2', password:'testPassword2',role:"admin"}
             const res = await request(app).post('/User').send(user2).set('authorization',resLogin.body.token)
             expect(res.status).toBe(201)
             expect(res.body.user.name).toEqual('testName2')
@@ -57,47 +63,83 @@ describe('User routes', ()=>{
                 name:'testUserNotAdmin',
                 email:'testEmailNotAdmin',
                 password:'testPasswordNotAdmin',
-                isAdmin:false
+                role:"client"
             })
             await testUserNotAdmin.save()
             const login = {email:'testEmailNotAdmin',password:'testPasswordNotAdmin'}
             const resLogin = await request(app).post('/auth/login').send(login)
-            const user = {name:'testName', email:'testEmail', password:'testPassword',isAdmin:true}
+            const user = {name:'testName', email:'testEmail', password:'testPassword',role:"admin"}
             const res = await request(app).post('/User').send(user).set('authorization',resLogin.body.token)
             expect(res.status).toBe(401)
         })
         it('should return 500',async()=>{
-            const user = new User({name:'testName', email:'testEmail', password:'testPassword',isAdmin:true})
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
             await user.save()
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
-            const user2 = {namE:'testName', email:'testEmail', password:'testPassword',isAdmin:true}
+            const user2 = {namE:'testName', email:'testEmail', password:'testPassword',role:"admin"}
             const res = await request(app).post('/User').send(user2).set('authorization',resLogin.body.token)
             expect(res.status).toBe(500)
         })
     })
     describe('PUT /User/:id',()=>{
         it('should update created User',async()=>{
-            const user = new User({name:'testName', email:'testEmail', password:'testPassword',isAdmin:true})
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
             await user.save()
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
-            const UserUpdate = {name:'testNameUpdated', email:'testEmail', password:'testPassword',isAdmin:true}
-            const res = await request(app).put(`/User`).send(UserUpdate).set('authorization',resLogin.body.token)
+            const UserUpdate = {name:'testNameUpdated', email:'testEmail', password:'testPassword',role:"admin"}
+            const res = await request(app).put(`/User/${user._id}`).send(UserUpdate).set('authorization',resLogin.body.token)
             expect(res.status).toBe(201)
             expect(res.body.updatedUser.name).toEqual('testNameUpdated')
+        })
+        it('should return 404',async()=>{
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
+            await user.save()
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const UserUpdate = {name:'testName', email:'testEmail', password:'testPassword',role:"admin"}
+            const objectid = new ObjectId()
+            const res = await request(app).put(`/User/${objectid}`).send(UserUpdate).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
+        })
+        it('should return 500',async()=>{
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
+            await user.save()
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const UserUpdate = {name:'testName', email:'testEmail', password:'testPassword',role:"admin"}
+            const res = await request(app).put(`/User/id_not_used`).send(UserUpdate).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(500)
         })
     })
     describe('DELETE /User/:id',()=>{
         it('should update created User',async()=>{
-            const user = new User({name:'testName', email:'testEmail', password:'testPassword',isAdmin:true})
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
             await user.save()
             const login = {email:'testEmail',password:'testPassword'}
             const resLogin = await request(app).post('/auth/login').send(login)
-            const res = await request(app).delete(`/User`).set('authorization',resLogin.body.token)
-            expect(res.status).toBe(201)
+            const res = await request(app).delete(`/User/${user._id}`).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(200)
             expect(res.body.user.name).toEqual('testName')
             expect(res.body.message).toEqual('Usuário excluído com sucesso.')
+        })
+        it('should return 404',async()=>{
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
+            await user.save()
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const objectid = new ObjectId()
+            const res = await request(app).delete(`/User/${objectid}`).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(404)
+        })
+        it('should return 500',async()=>{
+            const user = new User({name:'testName', email:'testEmail', password:'testPassword',role:"admin"})
+            await user.save()
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const res = await request(app).delete(`/User/id_not_used`).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(500)
         })
     })
 })
