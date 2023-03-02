@@ -12,7 +12,7 @@ module.exports = {
       name: process.env.ADMNAME,
       email: process.env.ADMEMAIL,
       password: await hashPass(),
-      isAdmin: true
+      role:"admin"
     });
   },
 
