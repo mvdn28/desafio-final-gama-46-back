@@ -1,5 +1,5 @@
 {
-  "exclude": ["migrations", "test"],
+  "exclude": ["migrations", "tests","coverage"],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
