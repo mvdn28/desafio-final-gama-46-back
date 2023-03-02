@@ -5,7 +5,7 @@ const connect = async() => {
     try {
         const dbUri = config.uri as string;
         mongoose.set('strictQuery',false);
-        await mongoose.connect(dbUri, { retryWrites: true, w: 'majority' });
+        await mongoose.connect(dbUri, { retryWrites: true, w: 'majority' , dbName:config.nameDb});
         console.log("Database Connected");
     } catch (error) {
         console.log('db error', error)
