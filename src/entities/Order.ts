@@ -1,12 +1,11 @@
 import mongoose, { Schema } from "mongoose";
 import { ICupom } from "./Cupom";
 import { IProduct } from "./Product";
-import { IUser } from "./User";
 
 export interface IOrder{
     products:IProduct[],
     total:number,
-    user: IUser,
+    user: any,
     cupom?: ICupom,
 }
 
