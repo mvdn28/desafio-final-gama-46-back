@@ -73,7 +73,7 @@ export class UserController{
               return res.status(404).json({ message: 'Usuário não encontrado.' });
             }
         
-            res.status(200).json({ updatedUser });
+            res.status(201).json({ updatedUser });
           } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Ocorreu um erro ao atualizar o usuário.' });
