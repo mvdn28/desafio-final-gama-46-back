@@ -3,16 +3,17 @@ import config  from "./config";
 
 const connect = async() => {
     try {
-        const dbUri = config.uri as string;
+        const dbUri = config.uri;
+        const dbName = config.environment === "test"
+            ? config.nameDbtest
+            : config.nameDb
         mongoose.set('strictQuery',false);
         await mongoose.connect(dbUri, { 
             retryWrites: true, 
             w: 'majority' , 
-            dbName:config.environment === "test"
-                ? config.nameDbtest
-                : config.nameDb
+            dbName
         });
-        console.log("Database Connected");
+        console.log(`Database ${dbName} Connected`);
     } catch (error) {
         console.log('db error', error)
         process.exit(1)
