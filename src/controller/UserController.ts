@@ -49,7 +49,7 @@ export class UserController{
               { expiresIn: '1h' }
             );
         
-            res.status(201).json({ token });
+            res.status(201).json({ user, token });
           } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Ocorreu um erro ao cadastrar o usuário.' });
@@ -61,17 +61,19 @@ export class UserController{
         
             const hashedPassword = await bcrypt.hash(password, 12);
         
-            const updatedUser = await User.findByIdAndUpdate(
+            await User.findByIdAndUpdate(
               req.params.id,
               { name, email, password: hashedPassword, role },
               { new: true, runValidators: true }
             );
+
+            const updatedUser = await User.findById(req.params.id)
         
             if (!updatedUser) {
               return res.status(404).json({ message: 'Usuário não encontrado.' });
             }
         
-            res.status(200).json({ user: updatedUser });
+            res.status(200).json({ updatedUser });
           } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Ocorreu um erro ao atualizar o usuário.' });
@@ -84,7 +86,7 @@ export class UserController{
               return res.status(404).json({ message: 'Usuário não encontrado.' });
             }
         
-            res.status(200).json({ message: 'Usuário excluído com sucesso.' });
+            res.status(200).json({user:deletedUser, message: 'Usuário excluído com sucesso.' });
           } catch (error) {
             console.error(error);
             res.status(500).json({ message: 'Ocorreu um erro ao excluir o usuário.' });
