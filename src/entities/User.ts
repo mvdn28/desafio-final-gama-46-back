@@ -1,8 +1,15 @@
-import mongoose from "mongoose";
+import {Schema , model} from "mongoose";
+
+export interface IUser{
+  name:string;
+  email:string;
+  password:string;
+  role:string;
+}
 
 
 // Definição da estrutura do documento de usuário
-const userSchema = new mongoose.Schema({
+const userSchema: Schema<IUser> = new Schema({
   name: {
     type: String,
     required: true
@@ -24,4 +31,4 @@ const userSchema = new mongoose.Schema({
 });
 
 // Criação do modelo de usuário
-export const User = mongoose.model('User', userSchema);
+export default model<IUser>("User",userSchema)
