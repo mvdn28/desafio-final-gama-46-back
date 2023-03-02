@@ -8,9 +8,8 @@ export const CheckAuth = (req:any,res: Response, next: NextFunction) => {
     if (!authHeader) {
         return res.status(401).json({ message: 'Token de autenticação não fornecido.' });
     }
-    const token = authHeader.split(' ')[1];
     try {
-        const decodedToken = jwt.verify(token, process.env.JWT as string) as any;
+        const decodedToken = jwt.verify(authHeader, process.env.JWT as string) as any;
         req.userId = decodedToken.userId;
         req.userRole = decodedToken.role;
         next();
