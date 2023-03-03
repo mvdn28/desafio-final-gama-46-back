@@ -9,6 +9,7 @@ export class OrderController {
         const orders = await Order
           .find()
           .populate('products')
+          .populate('user')
         res.status(200).json({ orders });
       } catch (error) {
         res.status(500).json({
@@ -24,6 +25,7 @@ export class OrderController {
         const order = await Order
           .findById(id)
           .populate('products')
+          .populate('user')
         order
           ? res.status(200).json({ order })
           : res.status(404).json({ message: "Pedido não encontrado." });
@@ -51,11 +53,14 @@ export class OrderController {
         
         const newOrder = new Order({
           _id: new Types.ObjectId(),
-          products:productObject,
+          products,
           total,
           user,
         } as unknown as Document<IOrder>);
-        const order = await newOrder.save();
+        const order = await (await (await newOrder
+          .save())
+          .populate("products"))
+          .populate("user")
         res.status(201).json({ order });
       } catch (error) {
         res.status(500).json({
@@ -79,8 +84,11 @@ export class OrderController {
         productObject.forEach((element: { price: number }) => {
           total += element.price;
         });
-        await Order.findOneAndReplace({ _id: id }, { products:productObject, total, user });
-        const updatedOrder = await Order.findById(id);
+        await Order.findOneAndReplace({ _id: id }, { products, total, user });
+        const updatedOrder = await Order
+          .findById(id)
+          .populate("products")
+          .populate('user')
         updatedOrder
           ? res.status(200).json({ updatedOrder })
           : res.status(404).json({ message: "Pedido não encontrado" });

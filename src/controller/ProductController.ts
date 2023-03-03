@@ -7,7 +7,9 @@ export class ProductController{
 
     static findAll = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const products = await Product.find();
+            const products = await Product
+                .find()
+                .populate("category")
             return res.status(200).json({ products });
         } catch (error) {
             return res.status(500).json({ error, message: "Ocorreu um erro ao listar os produtos" });
@@ -17,7 +19,9 @@ export class ProductController{
     static findOne = async (req: Request, res: Response): Promise<Response> => {
         try {
             const id = req.params.id;
-            const product = await Product.findById(id);
+            const product = await Product
+                .findById(id)
+                .populate("category")
             if (product) {
                 return res.status(200).json({ product });
             } else {
@@ -39,7 +43,9 @@ export class ProductController{
                 image,
                 category
             } as unknown as Document<IProduct>);
-            const product = await newProduct.save();
+            const product = await (await newProduct
+                .save())
+                .populate("category")
             return res.status(201).json({ product });
         } catch (error) {
             return res.status(500).json({ error, message: "Ocorreu um erro ao cadastrar o produto" });
@@ -51,7 +57,9 @@ export class ProductController{
             const id = req.params.id;
             const { name, description, price, image, category } = req.body;
             const update = await Product.findOneAndReplace({ _id: id }, { name, description, price, image, category });
-            const updatedProduct = await Product.findById(id);
+            const updatedProduct = await Product
+                .findById(id)
+                .populate("category");
             if (update) {
                 return res.status(200).json({ updatedProduct });
             } else {
