@@ -31,7 +31,7 @@ export class UserController{
         try {        
             const { name, email, password, role } = req.body;
         
-            const hashedPassword = await bcrypt.hash(password, 12);
+            const hashedPassword = await bcrypt.hash(password, 10);
         
             const user = new User({ name, email, password: hashedPassword, role });
             await user.save();
@@ -51,7 +51,7 @@ export class UserController{
         try {
             const { name, email, password, role } = req.body;
         
-            const hashedPassword = await bcrypt.hash(password, 12);
+            const hashedPassword = await bcrypt.hash(password, 10);
         
             await User.findByIdAndUpdate(
               req.params.id,
