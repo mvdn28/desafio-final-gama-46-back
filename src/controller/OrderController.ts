@@ -1,12 +1,15 @@
 import { Request, Response } from "express"
-import { Types, Document } from "mongoose"
+import { Types, Document, ObjectId } from "mongoose"
 import Order, { IOrder } from "../entities/Order"
-import { IProduct } from "../entities/Product"
+import Product, { IProduct } from "../entities/Product"
 
 export class OrderController {
     static findAll = async (req: Request, res: Response) => {
       try {
-        const orders = await Order.find();
+        const orders = await Order
+          .find()
+          .populate('products')
+          .populate('user')
         res.status(200).json({ orders });
       } catch (error) {
         res.status(500).json({
@@ -19,7 +22,10 @@ export class OrderController {
     static findOne = async (req: Request, res: Response): Promise<void | Response> => {
       try {
         const id = req.params.id;
-        const order = await Order.findById(id);
+        const order = await Order
+          .findById(id)
+          .populate('products')
+          .populate('user')
         order
           ? res.status(200).json({ order })
           : res.status(404).json({ message: "Pedido não encontrado." });
@@ -34,18 +40,27 @@ export class OrderController {
     static create = async (req: any, res: Response) => {
       try {
         const { products } = req.body;
+        const productObject = await Promise.all(
+          products.map(async(product:ObjectId)=>{
+            return await Product.findById(product)
+          })
+        )
         const user = req.userId;
         let total = 0;
-        products.forEach((element: { price: number }) => {
+        productObject.forEach((element: { price: number }) => {
           total += element.price;
         });
+        
         const newOrder = new Order({
           _id: new Types.ObjectId(),
           products,
           total,
           user,
         } as unknown as Document<IOrder>);
-        const order = await newOrder.save();
+        const order = await (await (await newOrder
+          .save())
+          .populate("products"))
+          .populate("user")
         res.status(201).json({ order });
       } catch (error) {
         res.status(500).json({
@@ -59,13 +74,21 @@ export class OrderController {
       try {
         const id = req.params.id;
         const { products } = req.body;
+        const productObject = await Promise.all(
+          products.map(async(product:ObjectId)=>{
+            return await Product.findById(product)
+          })
+        )
         const user = req.userId;
         let total = 0;
-        products.forEach((element: { price: number }) => {
+        productObject.forEach((element: { price: number }) => {
           total += element.price;
         });
         await Order.findOneAndReplace({ _id: id }, { products, total, user });
-        const updatedOrder = await Order.findById(id);
+        const updatedOrder = await Order
+          .findById(id)
+          .populate("products")
+          .populate('user')
         updatedOrder
           ? res.status(200).json({ updatedOrder })
           : res.status(404).json({ message: "Pedido não encontrado" });
