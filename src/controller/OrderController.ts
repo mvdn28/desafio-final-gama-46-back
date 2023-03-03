@@ -6,7 +6,9 @@ import Product, { IProduct } from "../entities/Product"
 export class OrderController {
     static findAll = async (req: Request, res: Response) => {
       try {
-        const orders = await Order.find();
+        const orders = await Order
+          .find()
+          .populate('products')
         res.status(200).json({ orders });
       } catch (error) {
         res.status(500).json({
@@ -19,7 +21,9 @@ export class OrderController {
     static findOne = async (req: Request, res: Response): Promise<void | Response> => {
       try {
         const id = req.params.id;
-        const order = await Order.findById(id);
+        const order = await Order
+          .findById(id)
+          .populate('products')
         order
           ? res.status(200).json({ order })
           : res.status(404).json({ message: "Pedido não encontrado." });
