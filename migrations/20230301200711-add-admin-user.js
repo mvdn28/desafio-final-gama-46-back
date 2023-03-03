@@ -8,15 +8,15 @@ const hashPass = async() =>{
 
 module.exports = {
   async up(db) {
-    await db.collection('User').insertOne({
+    await db.collection('users').insertOne({
       name: process.env.ADMNAME,
       email: process.env.ADMEMAIL,
       password: await hashPass(),
-      isAdmin: true
+      role:"admin"
     });
   },
 
   async down(db) {
-    await db.collection('User').deleteOne({ email: process.env.ADMEMAIL });
+    await db.collection('users').deleteOne({ email: process.env.ADMEMAIL });
   }
 };
