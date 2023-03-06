@@ -18,7 +18,6 @@ export class AuthController{
         }
     
         const passwordMatch = await bcrypt.compare(password, user.password);
-        console.log(passwordMatch)
         if (!passwordMatch) {
           return res.status(401).json({ message: 'E-mail ou senha inválidos.' });
         }
