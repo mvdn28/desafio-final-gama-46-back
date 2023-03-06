@@ -42,4 +42,20 @@ describe('Auth routes', ()=>{
             expect(res.body.token).toBeTruthy()
         })
     })
+    describe('POST /auth/change', ()=>{
+        it('should return an error that the wrong password was provided', async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const change = {oldPassword:'testPasswordWrong',newPassword:'testPasswordWrong'}
+            const res = await request(app).post('/auth/change').send(change).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(400)
+        })
+        it('should return a succes message', async()=>{
+            const login = {email:'testEmail',password:'testPassword'}
+            const resLogin = await request(app).post('/auth/login').send(login)
+            const change = {oldPassword:'testPassword',newPassword:'testNewPassword'}
+            const res = await request(app).post('/auth/change').send(change).set('authorization',resLogin.body.token)
+            expect(res.status).toBe(201)
+        })
+    })
 })

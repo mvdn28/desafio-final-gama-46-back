@@ -65,6 +65,28 @@ describe('Product routes', ()=>{
             expect(res.status).toBe(500)
         })
     })
+    describe('GET /product/category/:id', ()=>{
+        it('should return many Products', async()=>{
+            const testCategory = await Category.findOne({name:'testCategory'})
+            const product = { name:'ProdName', description:'ProdDesc', price:50, image:'ProdImage',category:testCategory!._id}
+            const product2 = { name:'ProdName2', description:'ProdDesc2', price:100, image:'ProdImage2',category:testCategory!._id}
+            const ExpectedData = [ product,product2]
+            await Product.insertMany(ExpectedData as unknown as IProduct[]);
+            const res =  await request(app).get(`/product/category/${testCategory!._id}`)
+            expect(res.status).toBe(200)
+            expect(res.body.products[0].name).toEqual(ExpectedData[0].name)
+            expect(res.body.products[1].name).toEqual(ExpectedData[1].name)
+        })
+        it('should return 404', async()=>{
+            const objectid = new ObjectId()
+            const res = await request(app).get(`/product/category/${objectid}`)
+            expect(res.status).toBe(404)
+        })
+        it('should return 500', async()=>{
+            const res = await request(app).get('/product/category/id_not_used')
+            expect(res.status).toBe(500)
+        })
+    })
     describe('POST /product', () => {
         it('should return the created object',async()=>{
             const login = {email:'testEmail',password:'testPassword'}

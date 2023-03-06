@@ -8,6 +8,7 @@ const router = Router()
 
 router.get("/",[], ProductController.findAll);
 router.get("/:id",[], ProductController.findOne);
+router.get("/category/:id",[], ProductController.findByCategory);
 router.post("/",[CheckAuth, CheckAdmin],ProductController.create);
 router.put("/:id",[CheckAuth, CheckAdmin], ProductController.update);
 router.delete("/:id",[CheckAuth, CheckAdmin], ProductController.findAndDelete);
