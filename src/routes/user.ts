@@ -7,7 +7,7 @@ const router = Router()
 
 router.get("/",[], UserController.findAll);
 router.get("/:id",[], UserController.findOne);
-router.post("/",[CheckAuth, CheckAdmin],UserController.create);
+router.post("/",[CheckAdmin],UserController.create);
 router.put("/:id",[CheckAuth], UserController.update);
 router.delete("/:id",[CheckAuth], UserController.findAndDelete);
 

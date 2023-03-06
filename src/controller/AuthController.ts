@@ -44,8 +44,7 @@ export class AuthController{
       const comparePassword = await bcrypt.compare(oldPassword,user!.password)
 
       if( user && comparePassword){
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.set("password",hashedPassword)
+        await user.set("password",newPassword)
         await user.save()
 
         const token = jwt.sign(
