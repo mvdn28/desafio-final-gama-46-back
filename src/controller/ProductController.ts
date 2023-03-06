@@ -32,6 +32,22 @@ export class ProductController{
         }
     }
 
+    static findByCategory = async (req: Request, res: Response): Promise<Response> => {
+        try {
+            const id = req.params.id;
+            const products = await Product
+                .find({category:id})
+                .populate("category")
+            if (products.length) {
+                return res.status(200).json({ products });
+            } else {
+                return res.status(404).json({ message: "Categoria não encontrada encontrada." });
+            }
+        } catch (error) {
+            return res.status(500).json({ error, message: "Ocorreu um erro ao listar os produtos" });
+        }
+    }
+
     static create = async (req: Request, res: Response): Promise<Response> => {
         try {
             const { name, description, price, image, category } = req.body;
