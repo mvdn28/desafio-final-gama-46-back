@@ -18,6 +18,7 @@ export class AuthController{
         }
     
         const passwordMatch = await bcrypt.compare(password, user.password);
+        console.log(passwordMatch)
         if (!passwordMatch) {
           return res.status(401).json({ message: 'E-mail ou senha inválidos.' });
         }
@@ -44,8 +45,7 @@ export class AuthController{
       const comparePassword = await bcrypt.compare(oldPassword,user!.password)
 
       if( user && comparePassword){
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        user.set("password",hashedPassword)
+        await user.set("password",newPassword)
         await user.save()
 
         const token = jwt.sign(
