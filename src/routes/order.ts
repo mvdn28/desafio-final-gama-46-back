@@ -7,9 +7,9 @@ const router = Router()
 
 router.get("/",[], OrderController.findAll);
 router.get("/:id",[], OrderController.findOne);
-router.post("/",[CheckAuth, CheckAdmin],OrderController.create);
-router.put("/:id",[CheckAuth, CheckAdmin], OrderController.update);
-router.delete("/:id",[CheckAuth, CheckAdmin], OrderController.findAndDelete);
+router.post("/",[CheckAuth],OrderController.create);
+router.put("/:id",[CheckAuth], OrderController.update);
+router.delete("/:id",[CheckAuth], OrderController.findAndDelete);
 
 
 export default router
