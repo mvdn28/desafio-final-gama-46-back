@@ -42,15 +42,13 @@ export class CouponController{
 
     static update = async (req: Request, res: Response) => {
         try {
+            const id = req.params.id
             const { name, discount } = req.body;
-            const coupon = await Coupon.findById(req.params.id);
-            if (!coupon) {
-              return res.status(404).json({ message: 'Cupom não encontrado.' });
-            }
-            coupon.name = name;
-            coupon.discount = discount;
-            const savedCoupon = await coupon.save();
-            res.status(200).json({ updatedCoupon: savedCoupon });
+            const update = await Coupon.findOneAndUpdate({ _id: id }, { name,discount });
+            const updatedCoupon = await Coupon.findById(id)
+            update
+                ? res.status(200).json({ updatedCoupon })
+                : res.status(404).json({ message: 'Cupom não encontrado.' });
         } catch (error) {
             res.status(500).json({error, message: 'Ocorreu um erro ao atualizar o cupom.' });
         }
@@ -61,7 +59,7 @@ export class CouponController{
             const id = req.params.id
             const coupon = await Coupon.findByIdAndDelete(id);
             coupon
-                ? res.status(201).json({ message: 'Cupom removido com sucesso.' })
+                ? res.status(201).json({ coupon,message: 'Cupom removido com sucesso.' })
                 : res.status(404).json({ message: 'Cupom não encontrado.' });
         } catch (error) {
             res.status(500).json({error, message: 'Ocorreu um erro ao remover o cupom.' });
