@@ -19,4 +19,4 @@ const couponSchema:Schema = new Schema(
     }
 )
 
-export default mongoose.model<ICoupon>("Cupom", couponSchema)
+export default mongoose.model<ICoupon>("Coupon", couponSchema)
