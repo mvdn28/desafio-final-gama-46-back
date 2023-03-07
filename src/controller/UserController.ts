@@ -49,11 +49,9 @@ export class UserController{
         try {
             const { name, email, password, role } = req.body;
         
-            const hashedPassword = await bcrypt.hash(password, 10);
-        
             await User.findByIdAndUpdate(
               req.params.id,
-              { name, email, password: hashedPassword, role },
+              { name, email, password, role },
               { new: true, runValidators: true }
             );
 
