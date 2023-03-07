@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { IProduct } from "./Product";
+import IProduct from "./Product";
 
 export interface IOrder{
     products:IProduct[],
