@@ -11,7 +11,6 @@ export class OrderController {
           .find()
           .populate('products')
           .populate('user')
-          .populate('cuponId')
         res.status(200).json({ orders });
       } catch (error) {
         res.status(500).json({
@@ -28,7 +27,6 @@ export class OrderController {
           .findById(id)
           .populate('products')
           .populate('user')
-          .populate('cuponId')
         order
           ? res.status(200).json({ order })
           : res.status(404).json({ message: "Pedido não encontrado." });
@@ -91,6 +89,14 @@ export class OrderController {
         const id = req.params.id;
         const { products , couponId } = req.body;
 
+        let productsFound
+        if (!products){
+          const order =await  Order.findById(id)
+          productsFound = order?.products
+        }else{
+          productsFound = products
+        }
+
         let coupon = null;
         if (couponId) {
           coupon = await Coupon.findById(couponId);
@@ -98,9 +104,8 @@ export class OrderController {
             return res.status(400).json({ message: 'Cupom inválido.' });
           }
         }
-
         const productObject = await Promise.all(
-          products.map(async(product:ObjectId)=>{
+          productsFound.map(async(product:ObjectId)=>{
             return await Product.findById(product)
           })
         )
@@ -114,7 +119,7 @@ export class OrderController {
           total = total - (total * coupon.discount) / 100;
         }
 
-        await Order.findOneAndReplace({ _id: id }, { products, total, user });
+        await Order.findOneAndUpdate({ _id: id }, { products, total, user, couponId });
         const updatedOrder = await Order
           .findById(id)
           .populate("products")
