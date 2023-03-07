@@ -1,11 +1,11 @@
 import mongoose, { Schema } from "mongoose"
 
-export interface ICupom {
+export interface ICoupon {
     name:string,
     discount:number
 }
 
-const cupomSchema:Schema = new Schema(
+const couponSchema:Schema = new Schema(
     {
         name:{type:String, required:true},
         discount: {
@@ -19,4 +19,4 @@ const cupomSchema:Schema = new Schema(
     }
 )
 
-export default mongoose.model<ICupom>("Cupom", cupomSchema)
+export default mongoose.model<ICoupon>("Cupom", couponSchema)
