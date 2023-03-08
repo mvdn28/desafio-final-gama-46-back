@@ -24,7 +24,7 @@
 
 <h2 align="center">:page_facing_up: Documentação</h2>
 <div align="center"> 
-  <a href="#">Clique aqui para ver a documentação (a ser adicionada)</a>
+  <a href="https://documenter.getpostman.com/view/26152834/2s93JnT5tM">Clique aqui para ver a documentação </a>
 </div>
 
 <br>
@@ -43,6 +43,13 @@
 <h2 align="center">:construction_worker: Colaboradores</h2>
 
 
+**Aline Gisele**
+
+Linkedin: 
+
+Github:
+
+---
 
 **Lais Assis**
 
@@ -52,8 +59,24 @@ Github: https://github.com/assislais
 
 ---
 
+**Lucas Coutinho Lira**
+
+Linkedin: 
+
+Github: https://github.com/lucaslirac
+
+---
+
 **Maurício Vieira**
 
 Linkedin: https://www.linkedin.com/in/mauricio-vieira-do-nascimento/
 
 Github: https://github.com/mvdn28
+
+---
+
+**Ravel Levi**
+
+Linkedin:
+
+Github: https://github.com/Hayckes
