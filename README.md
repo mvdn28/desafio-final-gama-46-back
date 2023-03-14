@@ -18,6 +18,27 @@
 1 - Faça a instalação das dependências com o comando:
 <pre>npm install</pre>
 
+2 - Para rodar o programa adicione na raiz do código o arquivo <code>.env</code> com as seguintes variáveis
+<pre>
+PORT=3333
+
+JWT=@ABC123
+MONGO_URL=mongodb://127.0.0.1:27017/bookstore
+DBURL=mongodb://127.0.0.1:27017/
+DBNAME=bookstore
+MONGO_DBNAME=bookstore
+MONGO_DBNAME_TEST=test
+ADMPASSWORD=password
+ADMNAME=adminUser
+ADMEMAIL=adminuser@email.com
+DBPORT=27017
+DBHOST=127.0.0.1
+</pre>
+
+3 - Para realizar os testes:
+<pre>npm run test</pre>
+
+
 4 - Inicie o servidor com o comando:
 <pre>npm start</pre>
 <br>
